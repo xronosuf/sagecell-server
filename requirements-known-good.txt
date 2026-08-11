@@ -1,0 +1,21 @@
+# Versions observed in the known-good production SageCell image built
+# 2026-07-11. The SageMath base image is pinned separately by digest.
+#
+# Direct SageCell additions:
+lockfile==0.12.2
+paramiko==5.0.0
+psutil==7.2.2
+sockjs-tornado==1.0.7
+SQLAlchemy==2.0.51
+
+# Important resolved dependencies/runtime packages whose versions were
+# captured from the known-good image. Keeping these constrained prevents
+# a future pip resolution from silently changing the execution environment.
+tornado==6.5.5
+jupyter_client==8.8.0
+ipykernel==7.2.0
+pyzmq==27.1.0
+cryptography==49.0.0
+bcrypt==5.0.0
+PyNaCl==1.6.2
+greenlet==3.5.3
