@@ -80,7 +80,7 @@ h = handlers.read_text()
 # Ximera/Xronos /service code-size compatibility.
 #
 # Upstream SageCell rejects code over 65,000 characters. Xronos canonical
-# page-wide Sage programs permit up to 100,000 characters, so keep the
+# page-wide Sage programs permit up to 200,000 characters, so keep the
 # server-side limit aligned with that explicitly tested client boundary.
 # --------------------------------------------------------------------
 
@@ -88,9 +88,9 @@ old_code_limit = """        if len(code) > 65000:
             self.set_status(413)
             self.finish('Max code size is 65000 characters')"""
 
-new_code_limit = """        if len(code) > 100000:
+new_code_limit = """        if len(code) > 200000:
             self.set_status(413)
-            self.finish('Max code size is 100000 characters')"""
+            self.finish('Max code size is 200000 characters')"""
 
 if old_code_limit not in h:
     raise SystemExit(

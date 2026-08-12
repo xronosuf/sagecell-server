@@ -19,7 +19,7 @@ The container built from this repository currently uses:
   `281fc2356c52929fb08f4cd4cbfd8655e4ddd236`;
 - a local in-container Sage kernel provider;
 - the SageCell `/service` API needed by Ximera/Xronos;
-- a maximum decoded Sage `code` size of 100,000 characters;
+- a maximum decoded Sage `code` size of 200,000 characters;
 - pinned operating-system and important Python dependency versions.
 
 See `BUILD-PROVENANCE.md` for the exact base-image digest and dependency
@@ -195,7 +195,7 @@ Then run:
     ./smoke-test.sh sagecell-server:local
 
 The smoke test starts a temporary container, waits for SageCell, checks normal
-execution, verifies the 100,000-character request boundary, and removes the
+execution, verifies the 200,000-character request boundary, and removes the
 temporary container when it finishes.
 
 A successful run ends with:
@@ -345,16 +345,16 @@ and tested.
 # Request-size behavior
 
 The `/service` endpoint accepts a decoded Sage `code` value containing up to
-100,000 characters.
+200,000 characters.
 
 The following boundary has been tested:
 
-- 100,000 characters: accepted;
-- 100,001 characters: HTTP 413 response.
+- 200,000 characters: accepted;
+- 200,001 characters: HTTP 413 response.
 
 The limit applies to the decoded `code` form field, not to the total
-URL-encoded HTTP request. Therefore an HTTP POST may be larger than 100,000
-bytes while still containing less than 100,000 characters of Sage source.
+URL-encoded HTTP request. Therefore an HTTP POST may be larger than 200,000
+bytes while still containing less than 200,000 characters of Sage source.
 
 ---
 

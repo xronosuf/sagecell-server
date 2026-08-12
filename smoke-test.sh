@@ -6,21 +6,21 @@ container="sagecell-smoke-$$"
 port="${SAGECELL_TEST_PORT:-18892}"
 
 tmp75="$(mktemp)"
-tmp100000="$(mktemp)"
-tmp100001="$(mktemp)"
+tmp200000="$(mktemp)"
+tmp200001="$(mktemp)"
 resp75="$(mktemp)"
-resp100000="$(mktemp)"
-resp100001="$(mktemp)"
+resp200000="$(mktemp)"
+resp200001="$(mktemp)"
 
 cleanup() {
     podman rm -f "$container" >/dev/null 2>&1 || true
     rm -f \
         "$tmp75" \
-        "$tmp100000" \
-        "$tmp100001" \
+        "$tmp200000" \
+        "$tmp200001" \
         "$resp75" \
-        "$resp100000" \
-        "$resp100001"
+        "$resp200000" \
+        "$resp200001"
 }
 trap cleanup EXIT
 
@@ -139,21 +139,21 @@ PY
 
 echo "75,000-character request: PASS"
 
-make_valid_program 100000 "$tmp100000"
+make_valid_program 200000 "$tmp200000"
 
 status="$(
     curl \
         --max-time 120 \
         -sS \
-        -o "$resp100000" \
+        -o "$resp200000" \
         -w '%{http_code}' \
-        --data-urlencode "code@${tmp100000}" \
+        --data-urlencode "code@${tmp200000}" \
         "http://127.0.0.1:${port}/service"
 )"
 
 test "$status" = "200"
 
-python3 - "$resp100000" <<'PY'
+python3 - "$resp200000" <<'PY'
 import json
 import sys
 
@@ -161,23 +161,23 @@ with open(sys.argv[1]) as f:
     data = json.load(f)
 
 if not data.get("success"):
-    raise SystemExit("100,000-character request did not report success.")
+    raise SystemExit("200,000-character request did not report success.")
 
-if data.get("stdout", "").strip() != "99986":
+if data.get("stdout", "").strip() != "199986":
     raise SystemExit(
-        "Unexpected 100,000-character result: "
+        "Unexpected 200,000-character result: "
         + repr(data.get("stdout"))
     )
 PY
 
-echo "100,000-character exact boundary: PASS"
+echo "200,000-character exact boundary: PASS"
 
-python3 - "$tmp100001" <<'PY'
+python3 - "$tmp200001" <<'PY'
 from pathlib import Path
 import sys
 
-code = "#" * 100001
-assert len(code) == 100001
+code = "#" * 200001
+assert len(code) == 200001
 Path(sys.argv[1]).write_text(code)
 PY
 
@@ -185,19 +185,19 @@ status="$(
     curl \
         --max-time 30 \
         -sS \
-        -o "$resp100001" \
+        -o "$resp200001" \
         -w '%{http_code}' \
-        --data-urlencode "code@${tmp100001}" \
+        --data-urlencode "code@${tmp200001}" \
         "http://127.0.0.1:${port}/service"
 )"
 
 test "$status" = "413"
 
 grep -Fq \
-    'Max code size is 100000 characters' \
-    "$resp100001"
+    'Max code size is 200000 characters' \
+    "$resp200001"
 
-echo "100,001-character rejection: PASS"
+echo "200,001-character rejection: PASS"
 
 commit="$(
     podman exec "$container" \

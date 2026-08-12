@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-12
+
+- `/service` Sage source limit increased from 100,000 to 200,000 characters
+  so legitimate large Xronos canonical page programs can execute while
+  retaining an explicit server-side request safety boundary.
+
+
 ## Unreleased
 
 Initial standalone Ximera/Xronos SageCell container release.

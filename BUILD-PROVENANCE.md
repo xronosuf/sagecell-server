@@ -45,7 +45,7 @@ deployment, including:
 - returning expression/display results through the `/service` endpoint;
 - support-trace logging used for privacy-safe request correlation;
 - increasing the Sage source-code limit for `/service` from 65,000 to
-  100,000 characters.
+  200,000 characters.
 
-The 100,000-character limit applies to the decoded Sage `code` form field,
+The 200,000-character limit applies to the decoded Sage `code` form field,
 not to the total encoded HTTP POST size.
