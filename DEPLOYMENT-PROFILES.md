@@ -31,6 +31,32 @@ components.
 
 This profile is the baseline that the repository must continue to preserve.
 
+### Reviewed versus experimental SageMath selection
+
+The standalone/public profile offers two deliberately different SageMath paths.
+
+The **normal build** is the compatibility-controlled path. It currently uses
+SageMath 10.9 pinned by immutable image digest together with reviewed
+operating-system and Python dependency versions.
+
+The **experimental latest-stable build** is an opt-in compatibility probe for
+public users who want to try the upstream `sagemath/sagemath:latest` image.
+Here, "experimental" refers to this repository's container/SageCell
+compatibility with a moving SageMath target; it does not mean the SageMath
+version itself is a development release.
+
+The repository intentionally does not provide `develop` as the normal
+experimental target. Advanced users can override the base image manually if
+they knowingly want a SageMath development image.
+
+`compatibility-report.sh` can be run against `latest` or against a specific
+SageMath image reference before attempting a build. It reports exact Ubuntu
+and Python baseline differences and names the packages requiring review.
+Available or observed versions are diagnostic information, not claims about
+the minimum compatible version.
+
+See `EXPERIMENTAL-LATEST.md` for the complete workflow and limitations.
+
 ## Profile 2: Ximera/Xronos Sage service
 
 Ximera/Xronos uses the same SageCell container as a computation worker behind
@@ -67,6 +93,8 @@ A likely long-term layout is approximately:
 ```text
 sagecell-server/
     Dockerfile
+    Dockerfile.experimental
+    compatibility-report.sh
     smoke-test.sh
     ... standalone worker files ...
 
@@ -92,13 +120,20 @@ section or linked document after the core build/run/test instructions. This
 keeps the repository approachable to public users while preserving enough
 architectural context for Ximera server development.
 
+The README should also make the currently reviewed SageMath version obvious
+and distinguish it from the optional latest-stable compatibility experiment.
+
 ## Compatibility ownership
 
-Both profiles share the same compatibility-controlled Sage environment.
-Changes to SageMath, SageCell, operating-system packages, Python dependencies,
-or local compatibility patches should therefore be validated against the
-standalone smoke tests first and then, where relevant, against Ximera content
-and integration tests.
+Both deployment profiles share the same reviewed compatibility-controlled Sage
+environment for supported operation. Changes to SageMath, SageCell,
+operating-system packages, Python dependencies, or local compatibility patches
+should therefore be validated against the standalone smoke tests first and
+then, where relevant, against Ximera content and integration tests.
+
+The experimental latest-stable path is intentionally outside that guarantee. A
+successful experimental build does not automatically become the reviewed
+baseline; promotion should remain a deliberate compatibility decision.
 
 This shared baseline is intentional: Ximera-specific integration should build
 on a generally usable SageCell container rather than depend on a separate,
