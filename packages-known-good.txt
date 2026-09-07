@@ -1,7 +1,7 @@
 # Frozen Ubuntu packages added or upgraded on top of the pinned
 # SageMath 10.9 base image.
 #
-# Reviewed: 2026-08-11
+# Reviewed: 2026-09-07
 #
 # Policy:
 #   These versions are intentional compatibility inputs.
@@ -13,12 +13,12 @@
 # than the no-longer-available July ubuntu2.6 revisions.
 
 ca-certificates=20260601~24.04.1
-curl=8.5.0-2ubuntu10.11
+curl=8.5.0-2ubuntu10.13
 git=1:2.43.0-1ubuntu7.3
 git-man=1:2.43.0-1ubuntu7.3
 libbrotli1=1.1.0-2build2
-libcurl3t64-gnutls=8.5.0-2ubuntu10.11
-libcurl4t64=8.5.0-2ubuntu10.11
+libcurl3t64-gnutls=8.5.0-2ubuntu10.13
+libcurl4t64=8.5.0-2ubuntu10.13
 liberror-perl=0.17029-2
 libgssapi-krb5-2=1.20.1-6ubuntu2.7
 libk5crypto3=1.20.1-6ubuntu2.7
@@ -31,6 +31,6 @@ libpsl5t64=0.21.2-1.1build1
 librtmp1=2.4+20151223.gitfa8646d.1-2build7
 libsasl2-2=2.1.28+dfsg1-5ubuntu3.1
 libsasl2-modules-db=2.1.28+dfsg1-5ubuntu3.1
-libssh-4=0.10.6-2ubuntu0.4
+libssh-4=0.10.6-2ubuntu0.5
 make=4.3-4.1build2
 tini=0.19.0-1
