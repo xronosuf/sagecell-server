@@ -78,7 +78,6 @@ while IFS= read -r line; do
 done < /tmp/packages-known-good.txt
 
 echo
-
 echo "============================================================"
 echo "PYTHON PACKAGE DIFFERENCES"
 echo "============================================================"
@@ -121,7 +120,6 @@ py_missing="$(printf "%s\n" "$python_report" | sed -n "s/^__PY_MISMATCH_COUNT__=
 [ -n "$py_missing" ] || py_missing=0
 
 echo
-
 echo "============================================================"
 echo "ACTION SUMMARY"
 echo "============================================================"
@@ -140,7 +138,7 @@ fi
 echo
 echo "Python baseline differences requiring review: $py_missing"
 printf "%s\n" "$python_report" \
-    | awk '$1 == "UPDATE" || $1 == "CHECK" {sub(/^[^ ]+[ ]+/, ""); print "  - " $0}'
+    | awk "\$1 == \"UPDATE\" || \$1 == \"CHECK\" {sub(/^[^ ]+[ ]+/, \"\"); print \"  - \" \$0}"
 if [ "$py_missing" -eq 0 ]; then
     echo "  - none"
 fi
