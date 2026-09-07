@@ -13,7 +13,7 @@ resp200000="$(mktemp)"
 resp200001="$(mktemp)"
 
 cleanup() {
-    podman rm -f "$container" >/dev/null 2>&1 || true
+    podman rm -f -v "$container" >/dev/null 2>&1 || true
     rm -f \
         "$tmp75" \
         "$tmp200000" \
