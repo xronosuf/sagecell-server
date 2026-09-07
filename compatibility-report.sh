@@ -89,35 +89,53 @@ from pathlib import Path
 import sys
 
 path = Path(sys.argv[1])
-count = 0
+mismatch_count = 0
+absent_count = 0
+check_count = 0
 rows = []
+
 for raw in path.read_text().splitlines():
     line = raw.strip()
     if not line or line.startswith("#"):
         continue
+
     if "==" not in line:
         rows.append(("CHECK", line, "unparsed baseline constraint", "unknown"))
-        count += 1
+        check_count += 1
         continue
+
     name, pinned = line.split("==", 1)
     try:
         installed = metadata.version(name)
     except metadata.PackageNotFoundError:
         installed = "NOT-IN-BASE-IMAGE"
-    status = "OK" if installed == pinned else "UPDATE"
-    if status != "OK":
-        count += 1
+        status = "ABSENT"
+        absent_count += 1
+    else:
+        if installed == pinned:
+            status = "OK"
+        else:
+            status = "UPDATE"
+            mismatch_count += 1
+
     rows.append((status, name, pinned, installed))
 
 for status, name, pinned, installed in rows:
     print(f"{status:<8} {name:<28} pinned={pinned}  base-image={installed}")
-print(f"__PY_MISMATCH_COUNT__={count}")
+
+print(f"__PY_MISMATCH_COUNT__={mismatch_count}")
+print(f"__PY_ABSENT_COUNT__={absent_count}")
+print(f"__PY_CHECK_COUNT__={check_count}")
 PYREPORT
 )"
 
-printf "%s\n" "$python_report" | grep -v "^__PY_MISMATCH_COUNT__="
-py_missing="$(printf "%s\n" "$python_report" | sed -n "s/^__PY_MISMATCH_COUNT__=//p")"
-[ -n "$py_missing" ] || py_missing=0
+printf "%s\n" "$python_report" | grep -v "^__PY_"
+py_mismatch="$(printf "%s\n" "$python_report" | sed -n "s/^__PY_MISMATCH_COUNT__=//p")"
+py_absent="$(printf "%s\n" "$python_report" | sed -n "s/^__PY_ABSENT_COUNT__=//p")"
+py_check="$(printf "%s\n" "$python_report" | sed -n "s/^__PY_CHECK_COUNT__=//p")"
+[ -n "$py_mismatch" ] || py_mismatch=0
+[ -n "$py_absent" ] || py_absent=0
+[ -n "$py_check" ] || py_check=0
 
 echo
 echo "============================================================"
@@ -136,18 +154,34 @@ else
 fi
 
 echo
-echo "Python baseline differences requiring review: $py_missing"
+echo "Python installed-version mismatches requiring review: $py_mismatch"
 printf "%s\n" "$python_report" \
-    | awk "\$1 == \"UPDATE\" || \$1 == \"CHECK\" {sub(/^[^ ]+[ ]+/, \"\"); print \"  - \" \$0}"
-if [ "$py_missing" -eq 0 ]; then
+    | awk "\$1 == \"UPDATE\" {sub(/^[^ ]+[ ]+/, \"\"); print \"  - \" \$0}"
+if [ "$py_mismatch" -eq 0 ]; then
     echo "  - none"
 fi
 
 echo
+echo "Python baseline packages absent from the base image: $py_absent"
+printf "%s\n" "$python_report" \
+    | awk "\$1 == \"ABSENT\" {sub(/^[^ ]+[ ]+/, \"\"); print \"  - \" \$0}"
+if [ "$py_absent" -eq 0 ]; then
+    echo "  - none"
+fi
+
+if [ "$py_check" -gt 0 ]; then
+    echo
+echo "Python constraints needing manual parsing/checking: $py_check"
+    printf "%s\n" "$python_report" \
+        | awk "\$1 == \"CHECK\" {sub(/^[^ ]+[ ]+/, \"\"); print \"  - \" \$0}"
+fi
+
+echo
 echo "Interpretation:"
-echo "  - UPDATE does not necessarily mean the newer version is incompatible."
+echo "  - UPDATE means the selected base image already contains a different version."
+echo "  - ABSENT means the package is not in the base image; this is not itself an incompatibility."
+echo "  - the experimental build may install absent direct packages and resolve their dependencies."
 echo "  - available/base-image values are observations, not minimum required versions."
-echo "  - packages absent from the base image may simply be installed during the build."
 echo "  - source/API compatibility cannot be proven by version comparison alone."
 echo "  - finish by building the image and running smoke-test.sh."
 '
