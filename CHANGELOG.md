@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-09-07
+
+- Refreshed the reviewed Ubuntu package baseline after upstream Noble
+  repositories removed the previously pinned curl/libcurl and libssh package
+  revisions.
+- Updated curl, `libcurl3t64-gnutls`, and `libcurl4t64` from
+  `8.5.0-2ubuntu10.11` to `8.5.0-2ubuntu10.13`.
+- Updated `libssh-4` from `0.10.6-2ubuntu0.4` to
+  `0.10.6-2ubuntu0.5`.
+- Verified the refreshed baseline with a clean container build and the full
+  repository smoke test, including the 200,000-character request boundary.
+
 ## 2026-08-12
 
 - `/service` Sage source limit increased from 100,000 to 200,000 characters
