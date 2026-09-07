@@ -168,6 +168,12 @@ Initially, health may be reported as:
 
     Health=starting
 
+This is expected. SageCell startup includes initialization of the service and
+its first Sage kernel, so several consecutive checks may report
+`Status=running Health=starting` before the container becomes healthy. In the
+validated setup it commonly took about 5 checks, and seeing roughly 5–10
+`starting` results is not by itself a sign of failure.
+
 After SageCell has initialized, it should become:
 
     Status=running Health=healthy
@@ -542,6 +548,9 @@ Read its logs:
     podman logs --tail 200 sagecell-server
 
 SageCell can require some startup time before its first Sage kernel is ready.
+Several consecutive `Health=starting` results are expected during normal
+startup; allow the service time to initialize before treating this as a
+failure.
 
 ## Remove everything and rebuild locally
 
